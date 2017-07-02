@@ -1,0 +1,29 @@
+Table Structure
+
+Users  -
+userid
+username
+password
+nameconfirmed
+
+
+Weapons - 
+weaponid
+name
+type
+description
+
+
+
+
+Items - 
+itemid
+name
+description
+
+
+CraftWeapons - 
+craftweaponid
+weaponid
+itemid
+

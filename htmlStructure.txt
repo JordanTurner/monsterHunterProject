@@ -1,0 +1,16 @@
+<?php  
+include 'config.php';
+
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+<div id ="main">
+</div> <!--main-->
+
+</body>
+</html>
