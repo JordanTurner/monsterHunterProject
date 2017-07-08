@@ -9,6 +9,7 @@ function sec_session_start() {
     session_name($session_name);
  
     $secure = false;
+    
     // This stops JavaScript being able to access the session id.
     $httponly = true;
     // Forces sessions to only use cookies.
@@ -45,13 +46,19 @@ function login($email, $password, $mysqli) {
         if ($stmt->num_rows == 1) {
             // If the user exists we check if the account is locked
             // from too many login attempts 
+
  
             if (checkbrute($user_id, $mysqli) == true) {
+                //echo 'brute failed';
+                //return true;
                 // Account is locked 
                 // Send an email to user saying their account is locked
-                return false;
-            } else {
-                // Check if the password in the database matches
+               // return false;
+            } else { 
+
+               // echo '$password = '.$password.' and $db_password = '.$db_password;
+                   // return true;
+              // Check if the password in the database matches
                 // the password the user submitted. We are using
                 // the password_verify function to avoid timing attacks.
                 if (password_verify($password, $db_password)) {
@@ -81,7 +88,8 @@ function login($email, $password, $mysqli) {
             }
         } else {
             // No user exists.
-            return false;
+           // return false;
+            echo 'no user';
         }
     }
 }
