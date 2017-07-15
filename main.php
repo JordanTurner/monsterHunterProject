@@ -13,7 +13,9 @@ sec_session_start();
         <link rel="stylesheet" href="styles/main.css" />
     </head>
     <body>
-        <?php if (login_check($mysqli) == true) : ?>
+        <?php 
+
+        if (login_check($mysqli) == true) : ?>
             <p>Welcome <?php echo htmlentities($_SESSION['username']); ?>!</p>
             <p>
                 This is an example protected page.  To access this page, users
@@ -21,7 +23,7 @@ sec_session_start();
                 the user, so pages will be able to determine the type of user
                 authorised to access the page.
             </p>
-            <p>Return to <a href="index.php">login page</a></p>
+            <p>Return to <a href="logout.php">Signout</a></p>
         <?php else : ?>
             <p>
                 <span class="error">You are not authorized to access this page.</span> Please <a href="index.php">login</a>.
