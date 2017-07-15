@@ -31,10 +31,7 @@ function sec_session_start() {
 
 function login($email, $password, $mysqli) {
     // Using prepared statements means that SQL injection is not possible. 
-    if ($stmt = $mysqli->prepare("SELECT userid, username, password 
-        FROM users
-       WHERE email = ?
-        LIMIT 1")) {
+    if ($stmt = $mysqli->prepare("SELECT userid, username, password FROM users WHERE email = ? LIMIT 1")) {
         $stmt->bind_param('s', $email);  // Bind "$email" to parameter.
         $stmt->execute();    // Execute the prepared query.
         $stmt->store_result();
@@ -69,12 +66,9 @@ function login($email, $password, $mysqli) {
                     $user_id = preg_replace("/[^0-9]+/", "", $user_id);
                     $_SESSION['user_id'] = $user_id;
                     // XSS protection as we might print this value
-                    $username = preg_replace("/[^a-zA-Z0-9_\-]+/", 
-                                                                "", 
-                                                                $username);
+                    $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $username);
                     $_SESSION['username'] = $username;
-                    $_SESSION['login_string'] = hash('sha512', 
-                              $db_password . $user_browser);
+                    $_SESSION['login_string'] = hash('sha512', $db_password . $user_browser);
                     // Login successful.
                     return true;
                 } else {
@@ -123,9 +117,7 @@ function checkbrute($user_id, $mysqli) {
 
 function login_check($mysqli) {
     // Check if all session variables are set 
-    if (isset($_SESSION['user_id'], 
-                        $_SESSION['username'], 
-                        $_SESSION['login_string'])) {
+    if (isset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['login_string'])) {
  
         $user_id = $_SESSION['user_id'];
         $login_string = $_SESSION['login_string'];
@@ -134,9 +126,7 @@ function login_check($mysqli) {
         // Get the user-agent string of the user.
         $user_browser = $_SERVER['HTTP_USER_AGENT'];
  
-        if ($stmt = $mysqli->prepare("SELECT password 
-                                      FROM users 
-                                      WHERE id = ? LIMIT 1")) {
+        if ($stmt = $mysqli->prepare("SELECT password FROM users WHERE userid = ? LIMIT 1")) {
             // Bind "$user_id" to parameter. 
             $stmt->bind_param('i', $user_id);
             $stmt->execute();   // Execute the prepared query.
@@ -161,7 +151,7 @@ function login_check($mysqli) {
             }
         } else {
             // Not logged in 
-            return false;
+            return false; //problem here
         }
     } else {
         // Not logged in 
