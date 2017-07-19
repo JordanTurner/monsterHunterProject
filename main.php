@@ -18,10 +18,7 @@ sec_session_start();
         if (login_check($mysqli) == true) : ?>
             <p>Welcome <?php echo htmlentities($_SESSION['username']); ?>!</p>
             <p>
-                This is an example protected page.  To access this page, users
-                must be logged in.  At some stage, we'll also check the role of
-                the user, so pages will be able to determine the type of user
-                authorised to access the page.
+                <a href="elements.php">Add New Element</a>
             </p>
             <p>Return to <a href="logout.php">Signout</a></p>
         <?php else : ?>
