@@ -7,9 +7,14 @@ sec_session_start();
 
 if (isset($_POST['element'])){
 
-$newElement = new addElement();
-header('Location: elements.php');
+	$element = $_POST['element'];
+	//echo $element;
 
+$newElement = new addElement($element, $mysqli);
+$newElement->setElement();
+
+header('Location: elements.php');
+exit();
 }
 
 

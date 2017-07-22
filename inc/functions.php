@@ -75,6 +75,8 @@ function login($email, $password, $mysqli) {
                     // Password is not correct
                     // We record this attempt in the database
                     $now = time();
+
+                    //CHANGE THIS TO PREPARED STATEMENT 
                     $mysqli->query("INSERT INTO login_log(user_id, time)
                                     VALUES ('$user_id', '$now')");
                     return false;
