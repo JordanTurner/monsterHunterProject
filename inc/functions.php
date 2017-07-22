@@ -117,7 +117,7 @@ function checkbrute($user_id, $mysqli) {
 }
 
 
-function login_check($mysqli) {
+function login_check($pdo) {
     // Check if all session variables are set 
     if (isset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['login_string'])) {
  
@@ -130,15 +130,18 @@ function login_check($mysqli) {
  
         if ($stmt = $mysqli->prepare("SELECT password FROM users WHERE userid = ? LIMIT 1")) {
             // Bind "$user_id" to parameter. 
-            $stmt->bind_param('i', $user_id);
-            $stmt->execute();   // Execute the prepared query.
-            $stmt->store_result();
+            //$stmt->bind_param('i', $user_id);
+            $stmt->execute([$useid]);   // Execute the prepared query.
+            //$stmt->store_result();
+            $count = $stmt->rowCount();
  
-            if ($stmt->num_rows == 1) {
+            if ($count == 1) {
                 // If the user exists get variables from result.
-                $stmt->bind_result($password);
-                $stmt->fetch();
-                $login_check = hash('sha512', $password . $user_browser);
+               // $stmt->bind_result($password);
+
+                $result = $stmt->fetch();
+
+                $login_check = hash('sha512', $result['password'] . $user_browser);
  
                 if (hash_equals($login_check, $login_string) ){
                     // Logged In!!!! 
