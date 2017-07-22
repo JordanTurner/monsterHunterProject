@@ -29,28 +29,32 @@ function sec_session_start() {
     session_regenerate_id(true);    // regenerated the session, delete the old one. 
 }
 
-function login($email, $password, $mysqli) {
-    // Using prepared statements means that SQL injection is not possible. 
-    if ($stmt = $mysqli->prepare("SELECT userid, username, password FROM users WHERE email = ? LIMIT 1")) {
-        $stmt->bind_param('s', $email);  // Bind "$email" to parameter.
-        $stmt->execute();    // Execute the prepared query.
-        $stmt->store_result();
+function login($email, $password, $pdo) {
+  
+    if ($stmt = $pdo->prepare("SELECT userid, username, password FROM users WHERE email = ? LIMIT 1")) {
+       // $stmt->bind_param('s', $email);  // Bind "$email" to parameter.
+        $stmt->execute([$email]);    // Execute the prepared query.
+       // $stmt->store_result();
  
         // get variables from result.
-        $stmt->bind_result($user_id, $username, $db_password);
-        $stmt->fetch();
- 
-        if ($stmt->num_rows == 1) {
+       // $stmt->bind_result($user_id, $username, $db_password);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $count = $stmt->rowCount();
+        $user_id = $result['userid'];
+        $username = $result['username'];
+        $db_password = $result['password'];
+        
+        if ($count == 1) {
             // If the user exists we check if the account is locked
             // from too many login attempts 
 
  
-            if (checkbrute($user_id, $mysqli) == true) {
+            if (checkbrute($user_id, $pdo) == true) {
                 //echo 'brute failed';
                 //return true;
                 // Account is locked 
                 // Send an email to user saying their account is locked
-               // return false;
+                return false;
             } else { 
 
                // echo '$password = '.$password.' and $db_password = '.$db_password;
@@ -74,12 +78,22 @@ function login($email, $password, $mysqli) {
                 } else {
                     // Password is not correct
                     // We record this attempt in the database
-                    $now = time();
+                    //$now = time();
 
-                    //CHANGE THIS TO PREPARED STATEMENT 
-                    $mysqli->query("INSERT INTO login_log(user_id, time)
-                                    VALUES ('$user_id', '$now')");
+               
+                    $stmt = $pdo->prepare("INSERT INTO login_log (user_id, time) VALUES (?,NOW())");
+                    $stmt->execute([$user_id]);
+                /*    if ($password == ''){
+                        $password = 'blank';
+                    }
+
+                    $stmt = $pdo->prepare("INSERT INTO test (db_password) VALUES (?)");
+                    $stmt->execute([$password]);*/
+
+
                     return false;
+
+                     //echo  $user_id .' YO'. $username .' '. $db_password;
                 }
             }
         } else {
@@ -90,25 +104,22 @@ function login($email, $password, $mysqli) {
     }
 }
 
-function checkbrute($user_id, $mysqli) {
+function checkbrute($user_id, $pdo) {
     // Get timestamp of current time 
     $now = time();
  
     // All login attempts are counted from the past 2 hours. 
     $valid_attempts = $now - (2 * 60 * 60);
  
-    if ($stmt = $mysqli->prepare("SELECT time 
-                             FROM login_log 
-                             WHERE user_id = ? 
-                            AND time > '$valid_attempts'")) {
-        $stmt->bind_param('i', $user_id);
+    if ($stmt = $pdo->prepare("SELECT time FROM login_log WHERE user_id = ?    AND time > '$valid_attempts'")) {
+        //$stmt->bind_param('i', $user_id);
  
         // Execute the prepared query. 
-        $stmt->execute();
-        $stmt->store_result();
- 
+        $stmt->execute([$user_id]);
+        //$stmt->store_result();
+        $count = $stmt->rowCount();
         // If there have been more than 5 failed logins 
-        if ($stmt->num_rows > 5) {
+        if ($count > 5) {
             return true;
         } else {
             return false;
@@ -128,10 +139,10 @@ function login_check($pdo) {
         // Get the user-agent string of the user.
         $user_browser = $_SERVER['HTTP_USER_AGENT'];
  
-        if ($stmt = $mysqli->prepare("SELECT password FROM users WHERE userid = ? LIMIT 1")) {
+        if ($stmt = $pdo->prepare("SELECT password FROM users WHERE userid = ? LIMIT 1")) {
             // Bind "$user_id" to parameter. 
             //$stmt->bind_param('i', $user_id);
-            $stmt->execute([$useid]);   // Execute the prepared query.
+            $stmt->execute([$user_id]);   // Execute the prepared query.
             //$stmt->store_result();
             $count = $stmt->rowCount();
  

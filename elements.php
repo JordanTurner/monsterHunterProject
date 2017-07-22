@@ -8,7 +8,7 @@ sec_session_start();
 if (isset($_POST['element'])){
 
 	$element = $_POST['element'];
-	//echo $element;
+	
 
 $newElement = new addElement($element, $mysqli);
 $newElement->setElement();

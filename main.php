@@ -15,7 +15,7 @@ sec_session_start();
     <body>
         <?php 
 
-        if (login_check($mysqli) == true) : ?>
+        if (login_check($pdo) == true) : ?>
             <p>Welcome <?php echo htmlentities($_SESSION['username']); ?>!</p>
             <p>
                 <a href="elements.php">Add New Element</a>

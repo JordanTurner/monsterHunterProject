@@ -4,7 +4,7 @@ include_once 'inc/functions.php';
  
 sec_session_start();
  
-if (login_check($mysqli) == true) {
+if (login_check($pdo) == true) {
     $logged = 'in';
 } else {
     $logged = 'out';
@@ -26,16 +26,12 @@ if (login_check($mysqli) == true) {
         ?> 
         <form action="inc/process_login.php" method="post" name="login_form">                      
             Email: <input type="text" name="email" />
-            Password: <input type="password" 
-                             name="password" 
-                             id="password"/>
-            <input type="button" 
-                   value="Login" 
-                   onclick="formhash(this.form, this.form.password);" /> 
+            Password: <input type="password" name="password" id="password"/>
+            <input type="button" value="Login" onclick="formhash(this.form, this.form.password);" /> 
         </form>
  
 <?php
-        if (login_check($mysqli) == true) {
+        if (login_check($pdo) == true) {
                         echo '<p>Currently logged ' . $logged . ' as ' . htmlentities($_SESSION['username']) . '.</p>';
  
             echo '<p>Do you want to change user? <a href="inc/logout.php">Log out</a>.</p>';
